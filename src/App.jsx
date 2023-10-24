@@ -10,7 +10,7 @@ const App = () => {
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
-      setNotes(initialNotes.data)
+      setNotes(initialNotes)
     })
   }, [])
 
@@ -49,9 +49,7 @@ const App = () => {
     setNewNote(event.target.value)
   }
 
-  const notesToShow = showAll
-    ? notes
-    : notes.filter((note) => note.data.important)
+  const notesToShow = showAll ? notes : notes.filter((note) => note.important)
 
   return (
     <div>
