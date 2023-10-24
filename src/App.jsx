@@ -1,56 +1,57 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import Note from "./components/Note";
-import noteService from "./services/notes";
+import { useState, useEffect } from "react"
+import Note from "./components/Note"
+import noteService from "./services/notes"
 
 const App = () => {
-  const defaultNote = "a new note...";
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState(defaultNote);
-  const [showAll, setShowAll] = useState(true);
+  const defaultNote = ""
+  const [notes, setNotes] = useState([])
+  const [newNote, setNewNote] = useState(defaultNote)
+  const [showAll, setShowAll] = useState(true)
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
-      setNotes(initialNotes);
-    });
-  }, []);
+      setNotes(initialNotes.data)
+    })
+  }, [])
 
   const addNote = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     const noteObject = {
       content: newNote,
       important: Math.random() < 0.5,
       id: notes.length + 1,
-    };
+    }
 
     noteService.create(noteObject).then((response) => {
-      setNotes(notes.concat(response.data));
-      setNewNote("");
-    });
-  };
+      setNotes(notes.concat(response.data))
+      setNewNote("")
+    })
+  }
 
   const toggleImportanceOf = (id) => {
-    const note = notes.find((n) => n.id === id);
-    const changedNote = { ...note, important: !note.important };
+    const note = notes.find((n) => n.id === id)
+    const changedNote = { ...note, important: !note.important }
 
     noteService
       .update(id, changedNote)
       .then((returnedNote) => {
-        setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)));
+        setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
       })
       .catch((error) => {
-        alert(`the note '${note.content}' was already deleted from server`);
-        setNotes(notes.filter((n) => n.id !== id));
-      });
-  };
+        alert(`the note '${note.content}' was already deleted from server`)
+        setNotes(notes.filter((n) => n.id !== id))
+      })
+  }
 
   const handleNoteChange = (event) => {
-    console.log(event.target.value);
-    setNewNote(event.target.value);
-  };
+    console.log(event.target.value)
+    setNewNote(event.target.value)
+  }
 
-  const notesToShow = showAll ? notes : notes.filter((note) => note.important);
+  const notesToShow = showAll
+    ? notes
+    : notes.filter((note) => note.data.important)
 
   return (
     <div>
@@ -74,7 +75,7 @@ const App = () => {
         <button type="submit">save</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
