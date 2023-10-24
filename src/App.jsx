@@ -1,53 +1,89 @@
 import { useState } from "react";
-import Note from "./components/Note";
 
-const App = (props) => {
-  const defaultNote = "a new note...";
-  const [notes, setNotes] = useState(props.notes);
-  const [newNote, setNewNote] = useState(defaultNote);
+const App = () => {
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("1-234-567-8900");
   const [showAll, setShowAll] = useState(true);
+  const [filterStr, setFilterStr] = useState("");
 
-  const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important);
+  const personsToShow = showAll
+    ? persons
+    : persons.filter((person) => person.name.includes(filterStr));
 
-  const addNote = (event) => {
+  const addName = (event) => {
     event.preventDefault();
 
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5,
-      id: notes.length + 1,
+    if (persons.map((person) => person.name).includes(newName)) {
+      alert(`${newName} already exists!`);
+      return;
+    }
+
+    const newPersonObj = {
+      id: persons.length + 1,
+      name: newName,
+      number: newNumber,
     };
 
-    setNotes(notes.concat(noteObject));
-    setNewNote(defaultNote);
+    setPersons(persons.concat(newPersonObj));
+    setNewName("");
 
-    console.log("button clicked", event.target);
+    console.log("button clicked ", event.target);
   };
 
-  const handleNoteChange = (event) => {
-    console.log(event.target.value);
-    setNewNote(event.target.value);
+  const handleFilterChange = (event) => {
+    setFilterStr(event.target.value);
+  };
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value);
+  };
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value);
+  };
+
+  const addFilter = (event) => {
+    event.preventDefault();
+    if (showAll) {
+      setFilterStr("");
+      console.log("cleared filter");
+    } else {
+      setFilterStr(filterStr);
+      console.log("set filter str ", filterStr);
+    }
   };
 
   return (
     <div>
-      <h1>Notes</h1>
+      <h1>phonebook</h1>
+      <h2>filter by name</h2>
       <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show { showAll ? 'important' : 'all' }
-        </button>
+        <form onSubmit={addFilter}>
+          <input value={filterStr} onChange={handleFilterChange} />
+          <button type="submit" onClick={() => setShowAll(!showAll)}>
+            {showAll ? "set filter" : "clear filter"}
+          </button>
+        </form>
       </div>
+      <h2>add number</h2>
+      <form onSubmit={addName}>
+        <div>
+          name: <input value={newName} onChange={handleNameChange} />
+          number: <input value={newNumber} onChange={handleNumberChange} />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+      <h2>numbers</h2>
       <ul>
-        {notesToShow.map((note) => (
-          <Note key={note.id} note={note} />
+        {personsToShow.map((person) => (
+          <li key={person.id}>
+            {person.id}: {person.name} :: {person.number}
+          </li>
         ))}
       </ul>
-      <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
-        <button type="submit">save</button>
-      </form>
     </div>
   );
 };
